@@ -1,0 +1,29 @@
+
+.markdown blockquote {
+  color: #007cff;
+  border-left: 2px solid #7d9ecb;
+  padding-left: .4rem;
+  margin-top: -.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown p {
+  margin-bottom: 1.1rem;
+}
+
+.markdown pre {
+  padding: .5rem;
+  line-height: 1.25;
+  overflow-x: scroll;
+  background-color: #66666622;
+}
+
+.markdown img,
+.markdown canvas,
+.markdown iframe,
+.markdown video,
+.markdown svg,
+.markdown select,
+.markdown textarea {
+  max-width: 100%;
+}
