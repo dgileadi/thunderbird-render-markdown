@@ -16,6 +16,21 @@
   line-height: 1.25;
   overflow-x: scroll;
   background-color: #66666622;
+  outline: 1px solid #66666644;
+}
+
+.markdown code {
+  background-color: #66666622;
+  outline: 1px solid #66666644;
+  padding: 0 1px;
+  margin: 0 1px;
+}
+
+.markdown pre code {
+  background-color: unset;
+  outline: unset;
+  padding: 0;
+  margin: 0;
 }
 
 .markdown img,
