@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <form>
+        <legend>Render Markdown:</legend>
+
+        <div>
+            <input type="radio" id="all-plain-text" name="scope" value="all-plain-text">
+            <label for="all-plain-text">For all plain text messages</label>
+        </div>
+
+        <div>
+            <input type="radio" id="markdown-header-detected" name="scope" value="markdown-header-detected">
+            <label for="markdown-header-detected">Only for messages with a markdown content type
+            </label>
+        </div>
+
+        <p><small>Messages with a markdown content type are those having a content-type of
+                    <code>text/markdown</code>, <code>text/x-markdown</code> or <code>text/plain</code> plus
+                    <code>markup=markdown</code> <a
+                        href="https://blog.freron.com/2011/thoughts-on-writing-emails-using-markdown/">a la
+                        MailMate</a>.</small></p>
+    </form>
+    <script src="options.js"></script>
+</body>
+
+</html>

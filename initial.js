@@ -1,5 +1,4 @@
-
-browser.runtime.onMessage.addListener(data => {
+browser.runtime.onMessage.addListener((data) => {
   if (data.command === 'renderMarkdown') {
     renderMarkdown(data.text);
   }
@@ -7,7 +6,7 @@ browser.runtime.onMessage.addListener(data => {
 
 function renderMarkdown(text) {
   var parent = document.querySelector('body > div');
-  parent.innerHTML = marked.parse(text, { sanitize: DOMPurify.sanitize });
+  parent.innerHTML = DOMPurify.sanitize(marked.parse(text));
   parent.classList.add('markdown');
 }
 
