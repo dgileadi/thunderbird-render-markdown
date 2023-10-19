@@ -2,7 +2,7 @@
     "name": "Render Markdown Messages",
     "description": "Render Markdown-formatted messages in the reading pane",
     "manifest_version": 2,
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": "David Gileadi",
     "applications": {
         "gecko": {
@@ -11,6 +11,8 @@
         }
     },
     "permissions": [
+        "menus",
+        "menus.overrideContext",
         "messagesRead",
         "messagesModify",
         "storage"
