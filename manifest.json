@@ -12,7 +12,6 @@
     },
     "permissions": [
         "menus",
-        "menus.overrideContext",
         "messagesRead",
         "messagesModify",
         "storage"
