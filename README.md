@@ -16,4 +16,4 @@ This extension uses [marked.js](https://marked.js.org/) to render the markdown a
 
 **Q: Can this extension or Markdown Here Revival send messages with a markdown content type?**
 
-**A:** No, Thunderbird doesn't currently support changing the content type of sent messages. See [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1717221).
+**A:** No, Thunderbird doesn't currently support changing the content type of sent messages. See [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1717221) and [this bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1280912).
