@@ -29,5 +29,9 @@
     "options_ui": {
         "page": "options.html",
         "browser_style": true
-    }
+    },
+    "message_display_action": {
+		"default_icon": "markdown-icon.png",
+		"default_label": "Render MD"
+	}
 }

@@ -103,11 +103,23 @@ const contextMenuId = messenger.menus.create({
   visible: false,
 });
 
-// Register a listener for the context menu click
-messenger.menus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId == contextMenuId) {
+// Toggle markdown rendering for current message
+function toggleRendering(tab) {
     sendRenderMarkdownCommand(tab.id, null);
     showingMarkdown = !showingMarkdown;
     updateContextMenuItem();
+}
+
+// Register a listener for the context menu click
+messenger.menus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId == contextMenuId) {
+    toggleRendering(tab);
   }
+});
+
+// Register a listener for messageDisplayAction
+messenger.messageDisplayAction.onClicked.addListener(async (tab, info) => {
+    if (info.button == 0) {
+        toggleRendering(tab);
+    }
 });
