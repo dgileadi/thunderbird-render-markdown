@@ -4,6 +4,7 @@ const markdownPatterns = [
   /\bmarkup=markdown\b/i,
 ];
 const textPlainPattern = /^text\/plain\b/i;
+const rfc822Pattern = /^message\/rfc822\b/i;
 const defaultDetectScope = 'all-plain-text';
 let detectScope = defaultDetectScope;
 let isMarkdownMessage = false;
@@ -11,14 +12,17 @@ let showingMarkdown = false;
 
 function shouldDisplayMarkdown(contentType) {
   let patterns =
-    detectScope === defaultDetectScope ? [textPlainPattern] : markdownPatterns;
+    detectScope === defaultDetectScope
+      ? [textPlainPattern, rfc822Pattern]
+      : markdownPatterns;
   return patterns.some((pattern) => pattern.test(contentType));
 }
 
 function getPlainText(messagePart) {
   if (
-    (messagePart.body && textPlainPattern.test(messagePart.contentType)) ||
-    shouldDisplayMarkdown(messagePart.contentType)
+    messagePart.body &&
+    (textPlainPattern.test(messagePart.contentType) ||
+      markdownPatterns.some((pattern) => pattern.test(contentType)))
   ) {
     return messagePart.body;
   }
