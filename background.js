@@ -5,15 +5,16 @@ const markdownPatterns = [
 ];
 const textPlainPattern = /^text\/plain\b/i;
 const rfc822Pattern = /^message\/rfc822\b/i;
-const defaultDetectScope = 'all-plain-text';
-let detectScope = defaultDetectScope;
-let isMarkdownMessage = false;
+const textPlainAndMarkdownPatterns = markdownPatterns.concat([textPlainPattern, rfc822Pattern]);
+const allPlainTextDetectScope = 'all-plain-text';
+let detectScope = allPlainTextDetectScope;
+let couldContainMarkdown = false;
 let showingMarkdown = false;
 
-function shouldDisplayMarkdown(contentType) {
+function couldBeMarkdown(contentType, detectScope) {
   let patterns =
-    detectScope === defaultDetectScope
-      ? [textPlainPattern, rfc822Pattern]
+    detectScope === allPlainTextDetectScope
+      ? textPlainAndMarkdownPatterns
       : markdownPatterns;
   return patterns.some((pattern) => pattern.test(contentType));
 }
@@ -37,19 +38,17 @@ function getPlainText(messagePart) {
 }
 
 async function detectMarkdownMessage(tabId) {
-  isMarkdownMessage = false;
-  showingMarkdown = false;
-
   let message = await messenger.messageDisplay.getDisplayedMessage(tabId);
   let full = await messenger.messages.getFull(message.id);
 
-  if (shouldDisplayMarkdown(full.headers['content-type'])) {
+  couldContainMarkdown = couldBeMarkdown(full.headers['content-type'], allPlainTextDetectScope);
+  showingMarkdown = false;
+
+  if (couldContainMarkdown) {
     const text = getPlainText(full);
     if (text) {
-      sendRenderMarkdownCommand(tabId, text);
-
-      isMarkdownMessage = true;
-      showingMarkdown = true;
+      showingMarkdown = couldBeMarkdown(full.headers['content-type'], detectScope);
+      sendRenderMarkdownCommand(tabId, text, full.headers['content-type'], detectScope);
     }
   }
 
@@ -60,7 +59,7 @@ function sendRenderMarkdownCommand(tabId, text) {
   messenger.tabs.sendMessage(tabId, {
     command: 'renderMarkdown',
     text: text,
-    as: showingMarkdown ? 'plain' : 'markdown'
+    as: showingMarkdown ? 'markdown' : 'plain'
   });
 }
 
@@ -68,7 +67,7 @@ async function updateContextMenuItem() {
   if (contextMenuId) {
     messenger.menus.update(contextMenuId, {
       title: showingMarkdown ? 'Show as Plain Text' : 'Show as Markdown',
-      visible: isMarkdownMessage,
+      visible: couldContainMarkdown,
     });
   }
 }
@@ -83,17 +82,17 @@ browser.runtime.onMessage.addListener((data, sender) => {
 // Listen to option changes for our detectScope option
 browser.storage.onChanged.addListener((changes) => {
   if (!!changes.scope) {
-    detectScope = changes.scope.newValue || defaultDetectScope;
+    detectScope = changes.scope.newValue || allPlainTextDetectScope;
   }
 });
 browser.storage.sync.get('scope').then((res) => {
-  detectScope = res.scope || defaultDetectScope;
+  detectScope = res.scope || allPlainTextDetectScope;
 });
 
 // Inject markdown rendering scripts and CSS
 browser.messageDisplayScripts.register({
   js: [
-    { file: 'marked.min.js' },
+    { file: 'marked.umd.js' },
     { file: 'purify.min.js' },
     { file: 'initial.js' },
   ],
@@ -110,8 +109,8 @@ const contextMenuId = messenger.menus.create({
 // Register a listener for the context menu click
 messenger.menus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId == contextMenuId) {
-    sendRenderMarkdownCommand(tab.id, null);
     showingMarkdown = !showingMarkdown;
+    sendRenderMarkdownCommand(tab.id, null);
     updateContextMenuItem();
   }
 });
