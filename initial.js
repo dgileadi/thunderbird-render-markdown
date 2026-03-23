@@ -26,8 +26,12 @@ function renderMarkdown(text) {
 function displayMarkdown(on) {
   const plaintextParent = document.querySelector('.tb-message-plaintext');
   const markdownParent = document.querySelector('.tb-message-markdown');
-  plaintextParent.hidden = on;
-  markdownParent.hidden = !on;
+  if (plaintextParent) {
+    plaintextParent.hidden = on;
+  }
+  if (markdownParent) {
+    markdownParent.hidden = !on;
+  }
 }
 
 function displayDebugHTML() {

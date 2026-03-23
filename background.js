@@ -19,36 +19,62 @@ function couldBeMarkdown(contentType, detectScope) {
   return patterns.some((pattern) => pattern.test(contentType));
 }
 
+function hasHtmlPart(messagePart) {
+  if (messagePart.contentType && /^text\/html\b/i.test(messagePart.contentType)) {
+    return true;
+  }
+  if (messagePart.parts) {
+    for (let i = 0; i < messagePart.parts.length; i++) {
+      if (hasHtmlPart(messagePart.parts[i])) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function getPlainText(messagePart) {
   if (
     messagePart.body &&
     (textPlainPattern.test(messagePart.contentType) ||
-      markdownPatterns.some((pattern) => pattern.test(contentType)))
+      markdownPatterns.some((pattern) => pattern.test(messagePart.contentType)))
   ) {
-    return messagePart.body;
+    return { body: messagePart.body, contentType: messagePart.contentType };
   }
   if (messagePart.parts) {
     for (let i = 0; i < messagePart.parts.length; i++) {
-      let body = getPlainText(messagePart.parts[i]);
-      if (body) {
-        return body;
+      let result = getPlainText(messagePart.parts[i]);
+      if (result) {
+        return result;
       }
     }
   }
+  return null;
 }
 
 async function detectMarkdownMessage(tabId) {
   let message = await messenger.messageDisplay.getDisplayedMessage(tabId);
   let full = await messenger.messages.getFull(message.id);
 
-  couldContainMarkdown = couldBeMarkdown(full.headers['content-type'], allPlainTextDetectScope);
+  couldContainMarkdown = false;
   showingMarkdown = false;
 
-  if (couldContainMarkdown) {
-    const text = getPlainText(full);
-    if (text) {
-      showingMarkdown = couldBeMarkdown(full.headers['content-type'], detectScope);
-      sendRenderMarkdownCommand(tabId, text, full.headers['content-type'], detectScope);
+  const result = getPlainText(full);
+  if (result) {
+    const hasHtml = hasHtmlPart(full);
+    const isExplicitMarkdown = markdownPatterns.some((pattern) => pattern.test(result.contentType));
+
+    // If email has HTML part and plain text is not explicitly markdown, don't process it
+    // (the HTML version should be displayed instead)
+    if (hasHtml && !isExplicitMarkdown) {
+      updateContextMenuItem();
+      return;
+    }
+
+    couldContainMarkdown = couldBeMarkdown(result.contentType, allPlainTextDetectScope);
+    if (couldContainMarkdown) {
+      showingMarkdown = couldBeMarkdown(result.contentType, detectScope);
+      sendRenderMarkdownCommand(tabId, result.body, result.contentType, detectScope);
     }
   }
 
