@@ -74,7 +74,7 @@ async function detectMarkdownMessage(tabId) {
     couldContainMarkdown = couldBeMarkdown(result.contentType, allPlainTextDetectScope);
     if (couldContainMarkdown) {
       showingMarkdown = couldBeMarkdown(result.contentType, detectScope);
-      sendRenderMarkdownCommand(tabId, result.body, result.contentType, detectScope);
+      sendRenderMarkdownCommand(tabId, result.body);
     }
   }
 

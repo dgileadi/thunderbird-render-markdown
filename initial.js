@@ -1,3 +1,28 @@
+const tokenizer = new marked.Tokenizer();
+const defaultTable = tokenizer.table;
+tokenizer.table = function (src) {
+  // if this could be a table (i.e. the first line contains a pipe), fix line breaks
+  if (src.match(/^[^\r\n]*\|/)) {
+    // get the whole block's content (everything up to the next empty line)
+    const blockMatch = src.match(/^([^\r\n]+\r?\n)+/);
+    // flowed lines are those that end with a space before the newline;
+    // remove newlines from flowed lines
+    const unwrapped = blockMatch[0].replace(/([^\r\n]+ )\r?\n/g, '$1');
+
+    // let the default implementation do the real work
+    const token = defaultTable.call(this, unwrapped);
+    if (!!token) {
+      // put back the pre-wrapped content to avoid later parsing issues
+      token.raw = blockMatch[0].replace(/\n*$/, '');
+    }
+    return token;
+  } else {
+    return;
+  }
+}
+
+marked.use({ tokenizer });
+
 browser.runtime.onMessage.addListener((data) => {
   if (data.command === 'renderMarkdown') {
     if (data.text) {
@@ -11,6 +36,8 @@ browser.runtime.onMessage.addListener((data) => {
 function renderMarkdown(text) {
   const plaintextParent = document.querySelector('body > div');
   const style = plaintextParent.getAttribute('style');
+try
+{
   const markdownHTML = DOMPurify.sanitize(marked.parse(text));
 
   plaintextParent.insertAdjacentHTML('afterend',
@@ -21,6 +48,9 @@ function renderMarkdown(text) {
   plaintextParent.classList.add('tb-message-plaintext');
 
   plaintextParent.hidden = true;
+} catch (e) {
+  console.error(e);
+}
 }
 
 function displayMarkdown(on) {
