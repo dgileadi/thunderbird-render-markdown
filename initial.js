@@ -40,8 +40,16 @@ try
 {
   const markdownHTML = DOMPurify.sanitize(marked.parse(text));
 
-  plaintextParent.insertAdjacentHTML('afterend',
-    `<div class="markdown tb-message-markdown" style="${style}">${markdownHTML}</div>`);
+  const markdownDiv = document.createElement('div');
+  markdownDiv.classList.add('markdown');
+  markdownDiv.classList.add('tb-message-markdown');
+  markdownDiv.style = style;
+  if ('Sanitizer' in window) {
+    markdownDiv.setHTML(markdownHTML);
+  } else {
+    markdownDiv.innerHTML = markdownHTML;
+  }
+  plaintextParent.insertAdjacentElement('afterend', markdownDiv);
   const markdownParent = document.querySelector('.tb-message-markdown');
 
   plaintextParent.classList.forEach(cls => markdownParent.classList.add(cls));

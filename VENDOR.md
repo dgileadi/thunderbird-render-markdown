@@ -1,4 +1,4 @@
 # Dependencies Used
 
-* purify.min.js: <https://github.com/cure53/DOMPurify/blob/3.3.0/dist/purify.min.js>.
-* marked.umd.js: <https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js>, built from [Release 17.0.1](https://github.com/markedjs/marked/tree/v17.0.1).
+* purify.min.js: <https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.4.15/purify.min.js>.
+* marked.umd.js: <https://cdnjs.cloudflare.com/ajax/libs/marked/18.0.12/lib/marked.umd.js>.
